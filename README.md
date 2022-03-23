@@ -195,3 +195,24 @@ Convert latitude and longitude data into spatial points using the function ```st
 shelters.sf <- st_as_sf(shelters.geo, coords = c("long", "lat"))
 ```
 
+# Coordinate Reference System
+
+Plot homeless encampments and shelters using functions from the tmap package. This is an example of a basic pin or dot map.
+
+```R
+tmap_mode("plot")
+
+tm_shape(homeless311.sf) +  
+  tm_dots(col="red") +
+tm_shape(shelters.sf) +  
+  tm_dots(col="blue")
+```
+
+```R
+## Warning: Currect projection of shape homeless311.sf unknown. Long-lat (WGS84) is
+## assumed.
+```
+
+```R
+## Warning: Currect projection of shape shelters.sf unknown. Long-lat (WGS84) is ## assumed.
+```
