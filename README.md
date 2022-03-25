@@ -237,11 +237,56 @@ st_crs(homeless311.sf)
 ## Coordinate Reference System: NA
 ```
 
-When we used ```st_as_sf()``` above to create homeless311, we did not specify a CRS. We should have. Working with spatial data requires both a Geographic Coordinate System (so you know where your points are on Earth) and a Projection (a way of putting points in 2 dimensions). Both. Always. Like Peanut Butter and Jelly. Like Sonny and Cher.
+When we used ```st_as_sf()``` above to create <i>homeless311</i>, we did not specify a CRS. We should have. Working with spatial data requires both a Geographic Coordinate System (so you know where your points are on Earth) and a Projection (a way of putting points in 2 dimensions). Both. Always. Like Peanut Butter and Jelly. Like Sonny and Cher.
 
 There are two common ways of specifying a coordinate system in R: via the EPSG numeric <a href="http://spatialreference.org/ref/epsg/">code</a> or via the <a href="https://proj4.org/apps/proj.html">PROJ4</a> formatted string. The PROJ4 syntax consists of a list of parameters, each separated by a space and prefixed with the ```+``` character. To specify the PCS, you use the argument ```+proj=```. To specify the GCS, you use the arguments ```+ellps=``` to establish the ellipse and ```+datum=``` to specify the datum.
 
 How do we know which CRS to use? The most common datums in North America are NAD27, NAD83 and WGS84, which has the ellipsoids clrk66, GRS80, and WGS84, respectively. The datum always specifies the ellipsoid that is used, but the ellipsoid does not specify the datum. This means you can specify ```+datum=``` and not specify ```+ellps=``` and R will know what to do, but not always the other way around. For example, the ellipsoid GRS80 is also associated with the datum GRS87, so if you specify ```ellps=GRS80``` without the datum, R won’t spit out an error, but will give you an unknown CRS. The most common datum and ellipsoid combinations are listed in Figure 1 in the Coordinate_Reference_Systems.pdf document on Canvas.
 
-When you are bringing in point data with latitude and longitude, the projected coordinate system is already set for you. Latitudes and longitudes are X-Y coordinates, which is essentially a Plate Carree projection. You specify a PCS using the argument (in quotes) ```+proj=longlat```. Let’s use ```st_as_sf()``` again on homeless311.df, but this time specify the CRS using the argument ```crs```.
+When you are bringing in point data with latitude and longitude, the projected coordinate system is already set for you. Latitudes and longitudes are X-Y coordinates, which is essentially a Plate Carree projection. You specify a PCS using the argument (in quotes) ```+proj=longlat```. Let’s use ```st_as_sf()``` again on <i>homeless311.df</i>, but this time specify the CRS using the argument ```crs```.
+
+```R
+homeless311.sf <- st_as_sf(homeless311.df, coords = c("Longitude", "Latitude"), crs = "+proj=longlat +datum=WGS84 +ellps=WGS84")
+```
+
+The CRS should have spaces only in between ```+proj=longlat```, ```+datum=WGS84``` and ```+ellps=WGS84```, and no other place. Remember, you could have just specified ```+datum=WGS84``` and R would have known what to do with the ellipsoid. What is the CRS now?
+
+```R
+st_crs(homeless311.sf)
+```
+
+We can see the PROJ4 string using
+
+```R
+st_crs(homeless311.sf)$proj4string
+```
+
+```{r}
+## [1] "+proj=longlat +datum=WGS84 +no_defs"
+```
+
+Instead of a PROJ4, we can specify the CRS using the EPSG associated with a GCS and PCS combination. A EPSG is a four-five digit unique number representing a particular CRS definition. The EPSG for the particular GCS and PCS combination used to create homeless311.sf is 4326. Had we looked this up  <a href="http://spatialreference.org/ref/epsg/4326/">here</a>, we could have used ```crs = 4326``` instead of ```"+proj=longlat +datum=WGS84"``` in ```st_as_sf()``` as we do below.
+
+```R
+homeless311.sf2 <- st_as_sf(homeless311.df, coords = c("Longitude", "Latitude"), crs = 4326)
+```
+
+we verify that the CRS are the same
+
+```R
+st_crs(homeless311.sf) == st_crs(homeless311.sf2)
+```
+
+```{r}
+## [1] TRUE
+```
+
+Let’s set the CRS for the homeless shelter and services points
+
+```R
+shelters.sf <- st_as_sf(shelters.geo, coords = c("long", "lat"), crs = 4326)
+```
+
+Another important problem that you may encounter is that a shapefile or any spatial data set you downloaded from a source contains no CRS (unprojected or unknown). In this case, use the function ```st_set_crs()``` to set the CRS.
+
 
