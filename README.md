@@ -418,5 +418,167 @@ Main takeaway points:
 
 If you stick with these principles, you should be able to get through most issues regarding CRSs. If you get stuck, read <a href="https://geocompr.robinlovelace.net/">GWR</a> Ch. 2.4 and 6.
 
+# OpenStreetMap
+
+Another way to bring point data into R is to draw from the wealth of spatial data offered by OpenStreetMap (OSM). OSM is a free and open map of the world created largely by the voluntary contributions of millions of people around the world. Since the data are free and open, there are few restrictions to obtaining and using the data. The only condition of using OSM data is proper attribution to OSM contributors.
+
+We can grab a lot of really cool data from OSM using their API. OSM serves two APIs, namely Main API for editing OSM, and Overpass API for providing OSM data. We will use Overpass API to gather data in this lab. What kinds of things can you bring into R through their API? A lot. Check them out on their <a href="https://wiki.openstreetmap.org/wiki/Map_Features">Wiki</a>.
+
+Data can be queried for download using a combination of search criteria like location and type of objects. It helps to understand how OSM data are structured. OSM data are stored as a list of attributes tagged in key - value pairs of geospatial objects (points, lines or polygons).
+
+Maybe were interested in the proximity of homeless encampments to restaurants. We can bring in restaurants listed by OSM using various functions from the package <b>osmdata</b>. Restaurants are tagged under amenities. Amenities are facilities used by visitors and residents. Here, ‘key’ is “amenity” and ‘value’ is “restaurant.” Other amenities include: “university”, “music school”, and “kindergarten” in education, “bus station”, “fuel”, “parking” and others in transportation, and much more.
+
+Use the following line of code to get restaurants in Los Angeles
+
+```R
+data_from_osm_df <- opq(getbb ("Los Angeles, California")) %>% #gets bounding box
+  add_osm_feature(key = "amenity", value = "restaurant") %>% #searches for restaurants within the bounding box
+  osmdata_sf() #download OSM data as sf
+```
+
+What you get is a list with a lot of information about restaurants mapped in OSM. Let’s extract the geometry and name of the restaurant.
+
+```R
+#select name and geometry from point data for restaurants
+resto_osm <- data_from_osm_df$osm_points %>% #select point data from downloaded OSM data
+  select(name, geometry) #selecting the name and geometry to plot
+```
+
+We get an <b>sf</b> object containing restaurants in Los Angeles.
+
+Finally, we can plot the restaurants using our comrade ```leaflet()```.
+
+```R
+#create a plot in leaflet
+leaflet() %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addCircles(data = resto_osm)
+```
+
+# Mapping point patterns
+
+Other than mapping their locations (e.g. dot map), what else can we do with point locations? One of the simplest analyses we can do with point data is to examine the distribution of points across an area (also known as point density). When working with neighborhoods, we can examine point distributions by summing up the number of points in each neighborhood. To get the count of homeless encampments by census tract, we can utilize the <b>tidyverse</b> and <b>sf</b> functions we learned in the last two labs. Note that most of these functions are not new, so I won’t go into intricate detail on what each line of code is doing. We first use ```st_join()``` to perform a spatial join with the encampments and tracts using ```st_intersects()```, which we learned about in class:
+
+```R
+la.city.tracts.homeless <- homeless.sf.utm  %>% 
+  st_join(la.city.tracts.utm, join = st_intersects) 
+
+glimpse(la.city.tracts.homeless)
+```
+
+```{r}
+## Rows: 55,536
+## Columns: 39
+## $ SRNumber                  <chr> "1-1523590871", "1-1523576655", "1-15235749…
+## $ CreatedDate               <chr> "12/31/2019 11:26:00 PM", "12/31/2019 09:27…
+## $ UpdatedDate               <chr> "01/14/2020 07:52:00 AM", "01/08/2020 01:42…
+## $ ActionTaken               <chr> "SR Created", "SR Created", "SR Created", "…
+## $ Owner                     <chr> "BOS", "BOS", "BOS", "BOS", "BOS", "LASAN",…
+## $ RequestType               <chr> "Homeless Encampment", "Homeless Encampment…
+## $ Status                    <chr> "Closed", "Closed", "Closed", "Closed", "Cl…
+## $ RequestSource             <chr> "Mobile App", "Mobile App", "Mobile App", "…
+## $ CreatedByUserOrganization <chr> "Self Service", "Self Service", "Self Servi…
+## $ MobileOS                  <chr> "iOS", "Android", "iOS", "iOS", "iOS", NA, …
+## $ Anonymous                 <chr> "N", "Y", "Y", "Y", "Y", "N", "N", "N", "N"…
+## $ AssignTo                  <chr> "WV", "WV", "WV", "WV", "WV", "NC", "WV", "…
+## $ ServiceDate               <chr> "01/14/2020 12:00:00 AM", "01/10/2020 12:00…
+## $ ClosedDate                <chr> "01/14/2020 07:51:00 AM", "01/08/2020 01:42…
+## $ AddressVerified           <chr> "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y", "Y"…
+## $ ApproximateAddress        <chr> NA, NA, NA, NA, NA, "N", NA, NA, NA, NA, "N…
+## $ Address                   <chr> "CANOGA AVE AT VANOWEN ST, 91303", "23001 W…
+## $ HouseNumber               <dbl> NA, 23001, NA, 5550, 5550, NA, 5200, 5500, …
+## $ Direction                 <chr> NA, "W", NA, "N", "N", NA, "N", "N", "S", "…
+## $ StreetName                <chr> NA, "VANOWEN", NA, "WINNETKA", "WINNETKA", …
+## $ Suffix                    <chr> NA, "ST", NA, "AVE", "AVE", NA, "AVE", "AVE…
+## $ ZipCode                   <dbl> 91303, 91307, 91367, 91364, 91364, 90004, 9…
+## $ Location                  <chr> "(34.1937512753, -118.597510305)", "(34.193…
+## $ TBMPage                   <dbl> 530, 529, 560, 560, 560, 594, 559, 559, 634…
+## $ TBMColumn                 <chr> "B", "G", "E", "E", "E", "A", "H", "J", "B"…
+## $ TBMRow                    <dbl> 6, 6, 2, 2, 2, 7, 3, 2, 6, 3, 3, 2, 7, 3, 2…
+## $ APC                       <chr> "South Valley APC", "South Valley APC", "So…
+## $ CD                        <dbl> 3, 12, 3, 3, 3, 13, 3, 3, 1, 3, 7, 3, 3, 4,…
+## $ CDMember                  <chr> "Bob Blumenfield", "John Lee", "Bob Blumenf…
+## $ NC                        <dbl> 13, 11, 16, 16, 16, 55, 16, 16, 76, 16, 101…
+## $ NCName                    <chr> "CANOGA PARK NC", "WEST HILLS NC", "WOODLAN…
+## $ PolicePrecinct            <chr> "TOPANGA", "TOPANGA", "TOPANGA", "TOPANGA",…
+## $ geometry                  <POINT [m]> POINT (352802.1 3784793), POINT (3499…
+## $ GEOID                     <chr> "06037135114", "06037135201", "06037137104"…
+## $ tpop                      <dbl> 4784, 2839, 2952, 4397, 4397, 3758, 6226, 6…
+## $ pnhwhite                  <dbl> 0.5495401, 0.5544206, 0.7090108, 0.6195133,…
+## $ pnhasn                    <dbl> 0.2928512, 0.1570976, 0.0619919, 0.0964294,…
+## $ pnhblk                    <dbl> 0.0340719, 0.0933427, 0.0152439, 0.0532181,…
+## $ phisp                     <dbl> 0.0923913, 0.1489961, 0.1121274, 0.1862634,…
+```
+
+Now we group by a variable using ```group_by()``` that uniquely identifies the census tracts, (we choose GEOID) and use ```summarize()``` to create a variable hcamps that counts the points for each tract using the function ```n()```
+
+```R
+la.city.tracts.homeless <- la.city.tracts.homeless %>%
+        group_by(GEOID) %>% 
+        summarize(hcamps = n()) 
+```
+
+Note that tracts that do not have any homeless encampments will not appear in la.city.tracts.homeless. We’ll join <i>la.city.tracts.homeless</i> back to the original tract file and assign a 0 to tracts with no encampments using the ```replace_na()``` function. We have to first drop <i>la.city.tracts.homeless’</i>s geometry because you cannot join two <b>sf</b> objects together using ```left_join()```. You drop the geometry using the ```st_drop_geometry()``` function.
+
+```R
+la.city.tracts.homeless <- st_drop_geometry(la.city.tracts.homeless)
+```
+
+Then perform the left join and replace NAs with 0.
+
+```R
+la.city.tracts.utm <- la.city.tracts.utm %>%
+                      left_join(la.city.tracts.homeless, by = "GEOID") %>%
+                      mutate(hcamps = replace_na(hcamps, 0))
+```
+
+We can map the count of encampments by census tract, but counts do not take into consideration exposure. In this case, tracts that are larger in size will likely have more encampments. Let’s calculate the number of encampments per area.
+
+To calculate the number of encampments per area, we’ll need to get the area of each polygon, which we do by using the function ```st_area()```. The default area metric is kilometers squared, but we can use the function ```set_units()``` from the <b>units</b> package to set the unit of measurement to (the U.S. friendly) miles squared ```value = mi2```. Use these functions within ```mutate()``` to create a new column <i>area</i> that contains each tract’s area.
+
+```R
+la.city.tracts.utm<- la.city.tracts.utm %>%      
+                  mutate(area=set_units(st_area(la.city.tracts.utm), value = mi2))
+```
+
+The class of variable <i>area</i> is <i>units</i>.
+
+```R
+class(la.city.tracts.utm$area)
+```
+
+```{r}
+## [1] "units"
+```
+
+We don’t want it in class units, but as class numeric. Convert it to numeric using ```as.numeric()```
+
+```R
+la.city.tracts.utm <- la.city.tracts.utm %>%
+                      mutate(area = as.numeric(area))
+```
+
+Then calculate the number of homeless encampments per area.
+
+```R
+la.city.tracts.utm<-mutate(la.city.tracts.utm,harea=hcamps/area)
+```
+
+Let’s create a choropleth map of encampments per area.
+
+```R
+tm_shape(la.city.tracts.utm, unit = "mi") +
+  tm_polygons(col = "harea", style = "quantile",palette = "Reds", 
+              border.alpha = 0, title = expression("Encampments per " * mi^2)) +
+  tm_scale_bar(position = c("left", "bottom")) +
+    tm_layout(main.title = "Homeless encampments in Los Angeles Tracts 2019",
+            main.title.size = 0.95, frame = FALSE,
+            legend.outside = TRUE, legend.outside.position = "right")
+```
+
+<img src = "fig/R-Geospatial-Open-Data-fig4.png.png">
+
+
+
 
 
