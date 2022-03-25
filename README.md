@@ -19,7 +19,7 @@ During class, we learned to process spatial data in R--particularly, areal/polyg
 To achieve these objectives, we will first examine the spatial distribution of homeless encampments in the City of Los Angeles using 311 data downloaded from the city’s <a href="https://data.lacity.org/"> open data portal</a>. This lab guide follows closely and supplements the material presented in the textbook <a href="https://geocompr.robinlovelace.net/"> Geocomputation with R</a>
 
 # Packages
-
+```R
 install.packages("sf")
 install.packages("tidyverse")
 install.packages("units")
@@ -30,6 +30,21 @@ install.packages("rmapshaper")
 install.packages("tidygeocoder")
 install.packages("leaflet")
 install.packages("osmdata")
+```
+
+```R
+library(sf)
+library(tidyverse)
+library(units)
+library(tmap)
+library(tidycensus)
+library(tigris)
+library(rmapshaper)
+library(tidygeocoder)
+library(leaflet)
+library(osmdata)
+```
+
 
 # Reading in census tract data
 
@@ -342,8 +357,6 @@ st_crs(la.city.tracts)$units
 Not good. Not only do we need to reproject ```homeless311.sf```, ```shelters.sf```, and ```la.city.tracts``` into the same CRS, we need to reproject them to a CRS that handles standard distance measures such as meters or kilometers. The <a href="https://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/universal-transverse-mercator.htm">Universal Transverse Mercator</a> (UTM) projected coordinate system works in meters. UTM separates the United States in separate zones and Southern California is in zone 11, as shown in the figure below.
 
 <img src = "fig/R-Geospatial-Open-Data-fig2.png.png">
-Figure 2: UTM Zones
-
 
 Let’s reproject <i>la.city.tracts</i>, <i>homeless311.sf</i> and <i>shelters.sf</i> to a UTM Zone 11N projected coordinate system. Use ```+proj=utm``` as the PCS, NAD83 as the datum and GRS80 as the ellipse (popular choices for the projection/datum/ellipse of the U.S.). Whenever you use UTM, you also need to specify the zone, which we do by using ```+zone=11N```. To reproject use the function ```st_transform()``` as follows.
 
