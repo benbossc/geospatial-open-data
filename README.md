@@ -344,6 +344,7 @@ Not good. Not only do we need to reproject ```homeless311.sf```, ```shelters.sf`
 <img src = "fig/R-Geospatial-Open-Data-fig2.png.png">
 Figure 2: UTM Zones
 
+
 Let’s reproject <i>la.city.tracts</i>, <i>homeless311.sf</i> and <i>shelters.sf</i> to a UTM Zone 11N projected coordinate system. Use ```+proj=utm``` as the PCS, NAD83 as the datum and GRS80 as the ellipse (popular choices for the projection/datum/ellipse of the U.S.). Whenever you use UTM, you also need to specify the zone, which we do by using ```+zone=11N```. To reproject use the function ```st_transform()``` as follows.
 
 ```R
@@ -358,8 +359,64 @@ shelters.sf.utm <- st_transform(shelters.sf,
 
 Equal?
 
+```R
+st_crs(la.city.tracts.utm) == st_crs(homeless.sf.utm)
+```
 
+```{r}
+## [1] TRUE
+```
 
+Units?
+
+```R
+st_crs(la.city.tracts.utm)$units
+```
+
+```{r}
+## [1] "m"
+```
+
+```R
+st_crs(homeless.sf.utm)$units
+```
+
+```{r}
+## [1] "m"
+```
+
+```R
+st_crs(shelters.sf.utm)$units
+```
+
+```{r}
+## [1] "m"
+```
+
+“m” stands for meters.
+
+Note that you cannot change the CRS if one has not already been established. For example, you cannot use the function ```st_transform()``` on <i>homeless311.sf</i> if you did not establish the CRS when you used ```st_as_sf()``` on <i>homeless311.df</i>.
+
+Now, let’s map em all.
+
+```R
+tm_shape(la.city.tracts) +
+  tm_polygons() +
+tm_shape(homeless.sf.utm) +  
+  tm_dots(col="red") +
+tm_shape(shelters.sf.utm) +  
+  tm_dots(col="blue")
+```
+
+<img src = "fig/R-Geospatial-Open-Data-fig3.png.png">
+
+Main takeaway points:
+
+1. The CRS for any spatial data set you create or bring into R should always be established.
+2. If you are planning to work with multiple spatial data sets in the same project, make sure they have the same CRS.
+3. Make sure the CRS is appropriate for the types of spatial analyses you are planning to conduct.
+
+If you stick with these principles, you should be able to get through most issues regarding CRSs. If you get stuck, read <a href="https://geocompr.robinlovelace.net/">GWR</a> Ch. 2.4 and 6.
 
 
 
