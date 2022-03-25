@@ -265,7 +265,7 @@ st_crs(homeless311.sf)$proj4string
 ## [1] "+proj=longlat +datum=WGS84 +no_defs"
 ```
 
-Instead of a PROJ4, we can specify the CRS using the EPSG associated with a GCS and PCS combination. A EPSG is a four-five digit unique number representing a particular CRS definition. The EPSG for the particular GCS and PCS combination used to create homeless311.sf is 4326. Had we looked this up  <a href="http://spatialreference.org/ref/epsg/4326/">here</a>, we could have used ```crs = 4326``` instead of ```"+proj=longlat +datum=WGS84"``` in ```st_as_sf()``` as we do below.
+Instead of a PROJ4, we can specify the CRS using the EPSG associated with a GCS and PCS combination. A EPSG is a four-five digit unique number representing a particular CRS definition. The EPSG for the particular GCS and PCS combination used to create homeless311.sf is 4326. Had we looked this up <a href="http://spatialreference.org/ref/epsg/4326/">here</a>, we could have used ```crs = 4326``` instead of ```"+proj=longlat +datum=WGS84"``` in ```st_as_sf()``` as we do below.
 
 ```R
 homeless311.sf2 <- st_as_sf(homeless311.df, coords = c("Longitude", "Latitude"), crs = 4326)
@@ -288,5 +288,78 @@ shelters.sf <- st_as_sf(shelters.geo, coords = c("long", "lat"), crs = 4326)
 ```
 
 Another important problem that you may encounter is that a shapefile or any spatial data set you downloaded from a source contains no CRS (unprojected or unknown). In this case, use the function ```st_set_crs()``` to set the CRS.
+
+# Reprojection
+
+The above section deals with a situation where you are establishing the CRS for the first time. However, you may want to change an already defined CRS. This task is known as reprojection. Why would you want to do this? There are three main reasons:
+
+1. Two spatial objects that are compared or combined have a different CRS.
+2. Many geometric functions require a certain CRS.
+3. Aesthetic purposes and/or to correct distortions.
+
+Reason 1: All spatial data in your current R session should have the same CRS if you want to overlay the objects on a map or conduct any of the multiple layer spatial operations we went through during class.
+
+Let’s check to see if ```homeless.sf``` and ```shelters.sf``` have the same CRS
+
+```R
+st_crs(homeless311.sf) == st_crs(shelters.sf)
+```
+
+```{r}
+## [1] TRUE
+```
+
+Great. Do they match with <i>la.city.tracts</i>
+
+```R
+st_crs(homeless311.sf) == st_crs(la.city.tracts)
+```
+
+```{r}
+## [1] FALSE
+```
+
+Oh no! If you map <i>homeless311.sf</i> and <i>la.city.tracts</i>, you’ll find that they align. But R is smart enough to reproject on the fly to get them on the same map. However, this does not always happen. Furthermore, R doesn’t actually change the CRS. This leads to the next reason why we may need to reproject.
+
+Many of R’s geometric functions that require calculating distances (e.g. distance from one point to another) or areas require a standard measure of distance/area. The spatial point data of homeless encampments are in longitude/latitude coordinates. Distance in longitude/latitude is in decimal degrees, which is not a standard measure. We can find out the units of a spatial data set by using the ```st_crs()``` function and calling up units as follows
+
+```R
+st_crs(homeless311.sf)$units
+```
+
+```{r}
+## NULL
+```
+
+```R
+st_crs(la.city.tracts)$units
+```
+
+```{r}
+## NULL
+```
+
+Not good. Not only do we need to reproject ```homeless311.sf```, ```shelters.sf```, and ```la.city.tracts``` into the same CRS, we need to reproject them to a CRS that handles standard distance measures such as meters or kilometers. The <a href="https://desktop.arcgis.com/en/arcmap/10.3/guide-books/map-projections/universal-transverse-mercator.htm">Universal Transverse Mercator</a> (UTM) projected coordinate system works in meters. UTM separates the United States in separate zones and Southern California is in zone 11, as shown in the figure below.
+
+<img src = "fig/R-Geospatial-Open-Data-fig2.png.png">
+Figure 2: UTM Zones
+
+Let’s reproject <i>la.city.tracts</i>, <i>homeless311.sf</i> and <i>shelters.sf</i> to a UTM Zone 11N projected coordinate system. Use ```+proj=utm``` as the PCS, NAD83 as the datum and GRS80 as the ellipse (popular choices for the projection/datum/ellipse of the U.S.). Whenever you use UTM, you also need to specify the zone, which we do by using ```+zone=11N```. To reproject use the function ```st_transform()``` as follows.
+
+```R
+la.city.tracts.utm <-st_transform(la.city.tracts, 
+                                 crs = "+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80") 
+
+homeless.sf.utm <- st_transform(homeless311.sf, 
+                                 crs = "+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80") 
+shelters.sf.utm <- st_transform(shelters.sf, 
+                                 crs = "+proj=utm +zone=11N +datum=NAD83 +ellps=GRS80")
+```
+
+Equal?
+
+
+
+
 
 
