@@ -208,11 +208,40 @@ tm_shape(shelters.sf) +
   tm_dots(col="blue")
 ```
 
-```R
+```{r}
 ## Warning: Currect projection of shape homeless311.sf unknown. Long-lat (WGS84) is
 ## assumed.
 ```
 
-```R
+```{r}
 ## Warning: Currect projection of shape shelters.sf unknown. Long-lat (WGS84) is ## assumed.
 ```
+
+<img src = "fig/R-Geospatial-Open-Data-fig1.png.png">
+
+We get a map that looks correct. But, we did get two warnings. These warnings are not something to sneeze at - they tell us that we haven’t set a projection, which is no problem if we’re just mapping, but is no good if we want to do some spatial analyses on the point locations.
+
+What we need to do is set the Coordinate Reference System (CRS). The CRS is an important concept to understand when dealing with spatial data. We won’t go through the real nuts and bolts of CRS, but we’ll go through enough of it so that you can get through most of the CRS related spatial data wrangling tasks in this class. In addition to GWR, Esri also has a nice explanation <a href="https://www.esri.com/arcgis-blog/products/arcgis-pro/mapping/gcs_vs_pcs/">here</a>. This <a href="https://mgimond.github.io/Spatial/coordinate-systems-in-r.html">site</a> also does a thorough job of explaining how to work with CRS in R. You can also read the document Coordinate_Reference_Systems.pdf on Canvas in the Other Resources folder.
+
+The CRS contains two major components: the Geographic Coordinate System (GCS) and the Projected Coordinate System (PCS). A GCS uses a three-dimensional spherical surface to define locations on the earth. The GCS is composed of two parts: the ellipse and the datum. The ellipse is a model of the Earth’s shape - how the earth’s roundness is calculated. The datum defines the coordinate system of this model - the origin point and the axes. You need these two basic components to place points on Earth’s three-dimensional surface. Think of it as trying to create a globe (ellipse) and figuring out where to place points on that globe (datum).
+
+The PCS then translates these points from a globe onto a two-dimensional space. We need to do this because were creating flat-paper or on-the-screen maps, not globes (it’s kind of hard carrying a globe around when you’re finding your way around a city).
+
+You can find out the CRS of a spatial data set using the function ```st_crs()```.
+
+```R
+st_crs(homeless311.sf)
+```
+
+```{r}
+## Coordinate Reference System: NA
+```
+
+When we used ```st_as_sf()``` above to create homeless311, we did not specify a CRS. We should have. Working with spatial data requires both a Geographic Coordinate System (so you know where your points are on Earth) and a Projection (a way of putting points in 2 dimensions). Both. Always. Like Peanut Butter and Jelly. Like Sonny and Cher.
+
+There are two common ways of specifying a coordinate system in R: via the EPSG numeric <a href="http://spatialreference.org/ref/epsg/">code</a> or via the <a href="https://proj4.org/apps/proj.html">PROJ4</a> formatted string. The PROJ4 syntax consists of a list of parameters, each separated by a space and prefixed with the ```+``` character. To specify the PCS, you use the argument ```+proj=```. To specify the GCS, you use the arguments ```+ellps=``` to establish the ellipse and ```+datum=``` to specify the datum.
+
+How do we know which CRS to use? The most common datums in North America are NAD27, NAD83 and WGS84, which has the ellipsoids clrk66, GRS80, and WGS84, respectively. The datum always specifies the ellipsoid that is used, but the ellipsoid does not specify the datum. This means you can specify ```+datum=``` and not specify ```+ellps=``` and R will know what to do, but not always the other way around. For example, the ellipsoid GRS80 is also associated with the datum GRS87, so if you specify ```ellps=GRS80``` without the datum, R won’t spit out an error, but will give you an unknown CRS. The most common datum and ellipsoid combinations are listed in Figure 1 in the Coordinate_Reference_Systems.pdf document on Canvas.
+
+When you are bringing in point data with latitude and longitude, the projected coordinate system is already set for you. Latitudes and longitudes are X-Y coordinates, which is essentially a Plate Carree projection. You specify a PCS using the argument (in quotes) ```+proj=longlat```. Let’s use ```st_as_sf()``` again on homeless311.df, but this time specify the CRS using the argument ```crs```.
+
