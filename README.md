@@ -578,7 +578,45 @@ tm_shape(la.city.tracts.utm, unit = "mi") +
 
 <img src = "fig/R-Geospatial-Open-Data-fig4.png.png">
 
+What is the correlation between neighborhood encampments per area and percent black? What about percent Hispanic? Use the function ```cor()```.
 
+```R
+cor(la.city.tracts.utm$harea, la.city.tracts.utm$pnhblk, use = "complete.obs")
+```
 
+```{r}
+## [1] -0.03325983
+```
 
+```R
+cor(la.city.tracts.utm$harea, la.city.tracts.utm$phisp, use = "complete.obs")
+```
 
+```{r}
+## [1] 0.01497071
+```
+
+## Question
+Instead of encampments per area, map encampments per population tpop. What is the correlation between neighborhood encampments per population and percent black? What about percent Hispanic?
+
+# Kernel density map
+Kernel density maps can show the spatial patterns of points. These are also commonly known as heat maps. They are cool looking and as long as you understand broadly how these maps are created and what they are showing, they are a good exploratory tool. Also, a benefit of using a kernel density map to visually present your point data is that it does away with predefined areas like census tracts. Your point space becomes continuous.
+
+To create a heat map, we turn to our friend ```ggplot()```. We did not cover this in class, but you can actually use ```ggplot()``` (as opposed to <b>tmap</b> or <b>leaflet</b>) to create maps (if you would like a tutorial for mapping with <b>ggplot</b>, check <a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html">this site</a>). Remember that ```ggplot()``` is built on a series of ```<GEOM_FUNCTION>()```, which is a unique function indicating the type of graph you want to plot. In the case of a kernel density map, ```stat_density2d()``` is the ```<GEOM_FUNCTION>()```. ```stat_density2d()``` uses the ```kde2d()``` function in the base <b>MASS</b> package on the backend to estimate the density using a bivariate normal kernel.
+
+Let’s create a heat map with ```stat_density2d()``` where areas with darker red colors have a higher density of encampments.
+
+```R
+ggplot() + 
+  stat_density2d(data = homeless311.df, aes(x = Longitude, y = Latitude, 
+                                            fill = ..level.., alpha = ..level..),
+                 alpha = .5, bins = 50, geom = "polygon") +
+  geom_sf(data=la.city, fill=NA, color='black') +
+  scale_fill_gradient(low = "blue", high = "red") + 
+  ggtitle("Homeless Encampments Heat Map") + 
+  theme_void() + theme(legend.position = "none")
+```
+
+<img src = "fig/R-Geospatial-Open-Data-fig5.png.png">
+
+Rather than the <b>sf</b> object <i>homeless311.sf</i>, we use the regular tibble <i>homeless311.df</i>, and indicate in ```aes()``` the longitude and latitude values of the homeless encampments. The argumment ```bins = 50``` specifies how finely grained we want to show the variation in encampments over space - the higher it is, the more granular (use a higher value than 50 to see what we mean). We add the Los Angeles city boundary using the ```geom_sf()```, which is the ```<GEOM_FUNCTION>()``` for mapping <b>sf</b> objects. We use ```scale_fill_gradient()``` to specify the color scheme where areas of low encampments density are blue and areas of high encampments density are red.
