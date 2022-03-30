@@ -6,6 +6,12 @@ This tutorial is licensed under a <a href="http://creativecommons.org/licenses/b
 # Acknowledgements
 This lab is sourced from and adapted from Professor Noli Brazil's course on <a href="https://cougrstats.wordpress.com/2018/10/12/webscraping-in-r/"> "Spatial Methods in Community Research" </a> and Manuel Giomond's <a href="https://mgimond.github.io/Spatial/index.html"> "Intro to GIS and Spatial Analysis" </a> curriculum.
 
+# Instructions
+For this lab, you will provide an R script file and .Word document with: 1) all the maps produced in this map (including question #1); 2) written answers for questions #2-3.
+
+# Question 1
+Using Census tract data and relying on what you learned in class, create a 2 static choropleth map of St. Joseph County: 1) percent of total asian population per census tract; 2) percent of total black population per census tract.
+
 # Introduction
 
 During class, we learned to process spatial data in R--particularly, areal/polygon data. This lab will talk more broadly about how to access and clean data from Open Data portals while also incorporating point data. The learning objectives are as follows:
@@ -110,7 +116,7 @@ homeless311.sf <- st_as_sf(homeless311.df, coords = c("Longitude", "Latitude"))
 # Street Addresses
 Often you will get point data that won’t have longitude/X and latitude/Y coordinates but instead have street addresses. The process of going from address to X/Y coordinates is known as geocoding.  
 
-To demonstrate geocoding, type in your street address, city and state inside the quotes below.
+To demonstrate geocoding, type in a street address, city and state of your favorite restaurant in the United States inside the quotes below.
 
 ```R
 myaddress.df  <- tibble(street = "", city = "", state = "")
@@ -129,9 +135,10 @@ If you view this object, you’ll find the latitude <i>lat</i> and longitude <i>
 myaddress.sf <- st_as_sf(myaddress.df, coords = c("long", "lat"))
 ```
 
-Type in ```tmap_mode("view")``` and then map <i>myaddress.sf</i> (Hint: Refer to what we did in class/lab for referesher). Zoom into the point. Did it get your home address correct?
+# Question 2
+View the object and search the lat/long in Google maps. Did you get it right? Please provide the name of the establishment as well as lat/long.
 
-Let’s bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal.
+Let’s now bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal.
 
 ```R
 shelters.df <- read_csv("https://raw.githubusercontent.com/crd230/data/master/Homeless_Shelters_and_Services.csv")
@@ -435,6 +442,8 @@ If you stick with these principles, you should be able to get through most issue
 
 # OpenStreetMap
 
+NOTE: If there is a timeout for the "OpenStreetMap" section of the lab, please note accordingly. Otherwise, please provide the map.
+
 Another way to bring point data into R is to draw from the wealth of spatial data offered by OpenStreetMap (OSM). OSM is a free and open map of the world created largely by the voluntary contributions of millions of people around the world. Since the data are free and open, there are few restrictions to obtaining and using the data. The only condition of using OSM data is proper attribution to OSM contributors.
 
 We can grab a lot of really cool data from OSM using their API. OSM serves two APIs, namely Main API for editing OSM, and Overpass API for providing OSM data. We will use Overpass API to gather data in this lab. What kinds of things can you bring into R through their API? A lot. Check them out on their <a href="https://wiki.openstreetmap.org/wiki/Map_Features">Wiki</a>.
@@ -611,8 +620,8 @@ cor(la.city.tracts.utm$harea, la.city.tracts.utm$phisp, use = "complete.obs")
 ## [1] 0.01497071
 ```
 
-## Question
-Instead of encampments per area, map encampments per population tpop. What is the correlation between neighborhood encampments per population and percent black? What about percent Hispanic?
+## Question 3
+Instead of encampments per area, map encampments per population tpop. What is the correlation between neighborhood encampments per population and percent Asian? What about percent Hispanic?
 
 # Kernel density map
 Kernel density maps can show the spatial patterns of points. These are also commonly known as heat maps. They are cool looking and as long as you understand broadly how these maps are created and what they are showing, they are a good exploratory tool. Also, a benefit of using a kernel density map to visually present your point data is that it does away with predefined areas like census tracts. Your point space becomes continuous.
