@@ -99,10 +99,11 @@ If you have longitudes and latitudes, you have all the information you need to m
 # Longitude/Latitude
 Best case scenario is that you have a point data set with geographic coordinates. Geographic coordinates are in the form of a longitude and latitude, where longitude is your X coordinate and spans East/West and latitude is your Y coordinate and spans North/South.
 
-Let’s bring in a csv data set of homeless encampments in Los Angeles City, which was downloaded from the <a href="https://data.lacity.org/">Los Angeles City Open Data portal</a>. I uploaded the data set on GitHub so you can directly read it in using read_csv()
+Let’s bring in a csv data set of homeless encampments in Los Angeles City, which was downloaded from the <a href="https://data.lacity.org/">Los Angeles City Open Data portal</a>. I uploaded the data set in the "data" folder of this repository so you can directly read it in using read_csv() ("homeless_311_LosAngelesCA_2019.csv)
 
 ```R
-homeless311.df <- read_csv("https://raw.githubusercontent.com/crd230/data/master/homeless311_la_2019.csv")
+homeless311.df <- read_csv("homeless_311_LosAngelesCA_2019.csv")
+# The above assumes that the .csv file is housed in the root of the directory.
 ```
 
 The data represent homeless encampment locations in 2019 as reported through the City’s 311 system. 
@@ -140,10 +141,11 @@ myaddress.sf <- st_as_sf(myaddress.df, coords = c("long", "lat"))
 # Question 1
 View the object and search the lat/long in Google maps. Did you get it right? Please provide the name of the establishment as well as lat/long.
 
-Let’s now bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal.
+Let’s now bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal. The file is called "Homeless_Shelters_Services.csv" located in the "data" folder of this repository.
 
 ```R
-shelters.df <- read_csv("https://raw.githubusercontent.com/crd230/data/master/Homeless_Shelters_and_Services.csv")
+shelters.df <- read_csv("Homeless_Shelters_and_Services.csv")
+# The above assumes that the .csv file is housed in the root of the directory.
 
 glimpse(shelters.df)
 ```
