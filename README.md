@@ -7,9 +7,9 @@ This tutorial is licensed under a <a href="http://creativecommons.org/licenses/b
 This lab is sourced from and adapted from Professor Noli Brazil's course on <a href="https://cougrstats.wordpress.com/2018/10/12/webscraping-in-r/"> "Spatial Methods in Community Research" </a> and Manuel Giomond's <a href="https://mgimond.github.io/Spatial/index.html"> "Intro to GIS and Spatial Analysis" </a> curriculum.
 
 # Instructions
-For this lab, you will provide an R script file and .Word document with: 1) all the maps produced in this map (including question #1); 2) written answers for questions #2-3.
+For this lab, you will provide an R script file and .Word document with: 1) all maps ; 2) written answers for questions #1 & #2.
 
-# Question 1
+# Map 1-2
 Using Census tract data and relying on what you learned in class, create a 2 static choropleth map of St. Joseph County: 1) percent of total asian population per census tract; 2) percent of total black population per census tract.
 
 # Introduction
@@ -135,7 +135,7 @@ If you view this object, you’ll find the latitude <i>lat</i> and longitude <i>
 myaddress.sf <- st_as_sf(myaddress.df, coords = c("long", "lat"))
 ```
 
-# Question 2
+# Question 1
 View the object and search the lat/long in Google maps. Did you get it right? Please provide the name of the establishment as well as lat/long.
 
 Let’s now bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal.
@@ -222,6 +222,8 @@ shelters.sf <- st_as_sf(shelters.geo, coords = c("long", "lat"))
 # Coordinate Reference System
 
 Plot homeless encampments and shelters using functions from the tmap package. This is an example of a basic pin or dot map.
+
+## Map 3
 
 ```R
 tmap_mode("plot")
@@ -421,6 +423,8 @@ Note that you cannot change the CRS if one has not already been established. For
 
 Now, let’s map em all.
 
+## Map 4
+
 ```R
 tm_shape(la.city.tracts) +
   tm_polygons() +
@@ -590,6 +594,8 @@ la.city.tracts.utm<-mutate(la.city.tracts.utm,harea=hcamps/area)
 
 Let’s create a choropleth map of encampments per area.
 
+## Map 5
+
 ```R
 tm_shape(la.city.tracts.utm, unit = "mi") +
   tm_polygons(col = "harea", style = "quantile",palette = "Reds", 
@@ -620,7 +626,7 @@ cor(la.city.tracts.utm$harea, la.city.tracts.utm$phisp, use = "complete.obs")
 ## [1] 0.01497071
 ```
 
-## Question 3
+## Question 2
 Instead of encampments per area, map encampments per population tpop. What is the correlation between neighborhood encampments per population and percent Asian? What about percent Hispanic?
 
 # Kernel density map
@@ -629,6 +635,8 @@ Kernel density maps can show the spatial patterns of points. These are also comm
 To create a heat map, we turn to our friend ```ggplot()```. We did not cover this in class, but you can actually use ```ggplot()``` (as opposed to <b>tmap</b> or <b>leaflet</b>) to create maps (if you would like a tutorial for mapping with <b>ggplot</b>, check <a href="https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html">this site</a>). Remember that ```ggplot()``` is built on a series of ```<GEOM_FUNCTION>()```, which is a unique function indicating the type of graph you want to plot. In the case of a kernel density map, ```stat_density2d()``` is the ```<GEOM_FUNCTION>()```. ```stat_density2d()``` uses the ```kde2d()``` function in the base <b>MASS</b> package on the backend to estimate the density using a bivariate normal kernel.
 
 Let’s create a heat map with ```stat_density2d()``` where areas with darker red colors have a higher density of encampments.
+
+## Map 6
 
 ```R
 ggplot() + 
