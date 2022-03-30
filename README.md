@@ -231,7 +231,7 @@ Plot homeless encampments and shelters using functions from the tmap package. Th
 tmap_mode("plot")
 
 tm_shape(homeless311.sf) +  
-  tm_dots(col="red") +
+  tm_dots(col="goldenrod1") +
 tm_shape(shelters.sf) +  
   tm_dots(col="blue")
 ```
@@ -431,7 +431,7 @@ Now, let’s map em all.
 tm_shape(la.city.tracts) +
   tm_polygons() +
 tm_shape(homeless.sf.utm) +  
-  tm_dots(col="red") +
+  tm_dots(col="goldenrod1") +
 tm_shape(shelters.sf.utm) +  
   tm_dots(col="blue")
 ```
