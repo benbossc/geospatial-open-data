@@ -131,6 +131,8 @@ myaddress.sf <- st_as_sf(myaddress.df, coords = c("long", "lat"))
 
 Type in ```tmap_mode("view")``` and then map <i>myaddress.sf</i> (Hint: Refer to what we did in class/lab for referesher). Zoom into the point. Did it get your home address correct?
 
+Let’s bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal.
+
 ```R
 shelters.df <- read_csv("https://raw.githubusercontent.com/crd230/data/master/Homeless_Shelters_and_Services.csv")
 
