@@ -247,8 +247,6 @@ tm_shape(shelters.sf) +
 ## Warning: Currect projection of shape shelters.sf unknown. Long-lat (WGS84) is ## assumed.
 ```
 
-<img src = "fig/R-Geospatial-Open-Data-fig1.png.png">
-
 We get a map that looks correct. But, we did get two warnings. These warnings are not something to sneeze at - they tell us that we haven’t set a projection, which is no problem if we’re just mapping, but is no good if we want to do some spatial analyses on the point locations.
 
 What we need to do is set the Coordinate Reference System (CRS). The CRS is an important concept to understand when dealing with spatial data. We won’t go through the real nuts and bolts of CRS, but we’ll go through enough of it so that you can get through most of the CRS related spatial data wrangling tasks in this class. In addition to GWR, Esri also has a nice explanation <a href="https://www.esri.com/arcgis-blog/products/arcgis-pro/mapping/gcs_vs_pcs/">here</a>. This <a href="https://mgimond.github.io/Spatial/coordinate-systems-in-r.html">site</a> also does a thorough job of explaining how to work with CRS in R. You can also read the document Coordinate_Reference_Systems.pdf on Canvas in the Other Resources folder.
@@ -438,8 +436,6 @@ tm_shape(shelters.sf.utm) +
   tm_dots(col="blue")
 ```
 
-<img src = "fig/R-Geospatial-Open-Data-fig3.png.png">
-
 Main takeaway points:
 
 1. The CRS for any spatial data set you create or bring into R should always be established.
@@ -610,8 +606,6 @@ tm_shape(la.city.tracts.utm, unit = "mi") +
             legend.outside = TRUE, legend.outside.position = "right")
 ```
 
-<img src = "fig/R-Geospatial-Open-Data-fig4.png.png">
-
 What is the correlation between neighborhood encampments per area and percent black? What about percent Hispanic? Use the function ```cor()```.
 
 ```R
@@ -652,7 +646,5 @@ ggplot() +
   ggtitle("Homeless Encampments Heat Map") + 
   theme_void() + theme(legend.position = "none")
 ```
-
-<img src = "fig/R-Geospatial-Open-Data-fig5.png.png">
 
 Rather than the <b>sf</b> object <i>homeless311.sf</i>, we use the regular tibble <i>homeless311.df</i>, and indicate in ```aes()``` the longitude and latitude values of the homeless encampments. The argumment ```bins = 50``` specifies how finely grained we want to show the variation in encampments over space - the higher it is, the more granular (use a higher value than 50 to see what we mean). We add the Los Angeles city boundary using the ```geom_sf()```, which is the ```<GEOM_FUNCTION>()``` for mapping <b>sf</b> objects. We use ```scale_fill_gradient()``` to specify the color scheme where areas of low encampments density are blue and areas of high encampments density are red.
