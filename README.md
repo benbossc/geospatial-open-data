@@ -11,7 +11,7 @@ For this lab, you will provide:
 1. .R script file (<b>not</b> an R Markdown file)
 2. A .docx file with: maps #1-6 as well as written answers for "questions" #1-2. 
 
-# Map 1-2
+# Maps 1-2
 Using Census tract data and relying on what you learned in class, create a 2 static choropleth map of St. Joseph County: 1) percent of total asian population per census tract; 2) percent of total black population per census tract.
 
 # Introduction
