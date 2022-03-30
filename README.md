@@ -600,7 +600,7 @@ Let’s create a choropleth map of encampments per area.
 
 ```R
 tm_shape(la.city.tracts.utm, unit = "mi") +
-  tm_polygons(col = "harea", style = "quantile",palette = "Reds", 
+  tm_polygons(col = "harea", style = "quantile",palette = "Purples", 
               border.alpha = 0, title = expression("Encampments per " * mi^2)) +
   tm_scale_bar(position = c("left", "bottom")) +
     tm_layout(main.title = "Homeless encampments in Los Angeles Tracts 2019",
