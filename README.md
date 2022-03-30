@@ -99,7 +99,7 @@ If you have longitudes and latitudes, you have all the information you need to m
 # Longitude/Latitude
 Best case scenario is that you have a point data set with geographic coordinates. Geographic coordinates are in the form of a longitude and latitude, where longitude is your X coordinate and spans East/West and latitude is your Y coordinate and spans North/South.
 
-Let’s bring in a csv data set of homeless encampments in Los Angeles City, which was downloaded from the <a href="https://data.lacity.org/">Los Angeles City Open Data portal</a>. I uploaded the data set in the "data" folder of this repository so you can directly read it in using read_csv() ("homeless_311_LosAngelesCA_2019.csv)
+Let’s bring in a csv data set of homeless encampments in Los Angeles City, which was downloaded from the <a href="https://data.lacity.org/">Los Angeles City Open Data portal</a>. I uploaded the data set in the "data" folder of this repository so you can directly read it in using read_csv() ("homeless_311_LosAngelesCA_2019.csv")
 
 ```R
 homeless311.df <- read_csv("homeless_311_LosAngelesCA_2019.csv")
