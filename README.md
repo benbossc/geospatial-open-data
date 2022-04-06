@@ -144,7 +144,7 @@ View the object and search the lat/long in Google maps. Did you get it right? Pl
 Let’s now bring in a csv file containing the street addresses of homeless shelters and services in Los Angeles County , which I also downloaded from Los Angeles’ open data portal. The file is called "Homeless_Shelters_Services.csv" located in the "data" folder of this repository.
 
 ```R
-shelters.df <- read_csv("Homeless_Shelters_and_Services.csv")
+shelters.df <- read_csv("Homeless_Shelters_Services.csv")
 # The above assumes that the .csv file is housed in the root of the directory.
 
 glimpse(shelters.df)
